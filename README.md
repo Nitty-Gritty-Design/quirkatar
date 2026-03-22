@@ -3,7 +3,7 @@
   <h1>✨ Quirkatar Generator</h1>
   <p>A free, lightweight, zero-dependency procedural avatar generator</p>
 
-  <a href="https://noizefield.github.io/quirkatar-avatar-generator/">
+  <a href="https://nitty-gritty-design.github.io/quirkatar-avatar-generator/">
     <img src="https://img.shields.io/badge/LIVE_DEMO-Try_It_Now-brightgreen?style=for-the-badge&logo=google-chrome" />
   </a>
 </div>
