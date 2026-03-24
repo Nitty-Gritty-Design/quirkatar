@@ -31,11 +31,12 @@ Quirkatar generates hilarious, memorable, and utterly unique avatars from any st
 |---------|-------------|
 | 🪶 **Zero Dependencies** | Pure vanilla JS + SVG. No bloat, no network requests, no drama |
 | 🎲 **Deterministic Seeds** | `"user@email.com"` always produces the same chaos |
+| 😊 **6 Mood Controls** | Happy, sad, angry, surprised, chill, or random |
+| 🎨 **4 Color Palettes** | Default, pastel, neon, monochrome |
 | 👀 **14 Eye Types** | Normal, cyclops, glasses, stars, hearts, wink, and more |
 | 😺 **11 Mouth Styles** | Smiles, fangs, tongues, teeth, zigzags... |
 | 👂 **7 Ear Options** | Cat, bear, bunny, alien, elf, robot, or none |
 | 🎩 **8 Headwear** | Hats, crowns, horns, headphones, bows |
-| 🎨 **37 Colors** | Hand-picked to look *chef's kiss* |
 | 💾 **Download as PNG** | One-click export at 512x512 |
 | ⚡ **Lightweight** | ~10KB, loads instantly |
 
@@ -46,7 +47,15 @@ Quirkatar generates hilarious, memorable, and utterly unique avatars from any st
 <script src="https://unpkg.com/quirkatar"></script>
 <div id="avatar"></div>
 <script>
+  // Random avatar
   document.getElementById('avatar').innerHTML = generateAvatarSvg('your-seed-here');
+  
+  // Happy avatar with neon colors
+  document.getElementById('avatar').innerHTML = generateAvatarSvg('your-seed-here', { 
+    mood: 'happy', 
+    palette: 'neon',
+    size: 200 
+  });
 </script>
 ```
 
@@ -58,8 +67,12 @@ npm install quirkatar
 ```javascript
 import { generateAvatarSvg } from 'quirkatar';
 
-// Generate a 200px avatar
-const avatar = generateAvatarSvg('hello-world', 200);
+// Generate a 200px happy avatar
+const avatar = generateAvatarSvg('hello-world', { 
+  size: 200, 
+  mood: 'happy',
+  palette: 'pastel'
+});
 document.getElementById('profile').innerHTML = avatar;
 ```
 
@@ -71,28 +84,40 @@ Just download `avatar.js` and include it:
 
 ## API
 
-### `generateAvatarSvg(seed, size, square, animated)`
+### `generateAvatarSvg(seed, options)`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `seed` | `string` | *required* | Any string to generate the avatar from |
-| `size` | `number` | `100` | Width/height in pixels |
-| `square` | `boolean` | `false` | `true` for square, `false` for circle |
-| `animated` | `boolean` | `true` | Enable breathing, blinking, twitching animations |
+| `options.size` | `number` | `100` | Width/height in pixels |
+| `options.square` | `boolean` | `false` | `true` for square, `false` for circle |
+| `options.animated` | `boolean` | `true` | Enable breathing, blinking, twitching animations |
+| `options.mood` | `string` | `'random'` | `'random'`, `'happy'`, `'sad'`, `'angry'`, `'surprised'`, `'chill'` |
+| `options.palette` | `string` | `'default'` | `'default'`, `'pastel'`, `'neon'`, `'monochrome'` |
+| `options.eyebrows` | `boolean` | `true` | Show expressive eyebrows |
 
 **Returns:** SVG string ready to inject into DOM
 
 ## Examples
 
 ```javascript
-// Default circular avatar
+// Default avatar
 generateAvatarSvg('user123')
 
+// Happy avatar with neon colors
+generateAvatarSvg('user123', { mood: 'happy', palette: 'neon' })
+
+// Sad avatar with pastel colors
+generateAvatarSvg('user123', { mood: 'sad', palette: 'pastel', size: 200 })
+
 // Large square avatar, no animation
-generateAvatarSvg('team-member', 256, true, false)
+generateAvatarSvg('team-member', { size: 256, square: true, animated: false })
 
 // Use email as seed (consistent across sessions)
-generateAvatarSvg('john@company.com', 80)
+generateAvatarSvg('john@company.com', { size: 80, mood: 'chill' })
+
+// Monochrome avatar for professional UI
+generateAvatarSvg('user-id', { palette: 'monochrome', mood: 'chill' })
 ```
 
 ## Use Cases
@@ -108,11 +133,11 @@ generateAvatarSvg('john@company.com', 80)
 
 With the current feature set, Quirkatar can generate:
 
-**8 head shapes × 7 ears × 14 eyes × 11 mouths × 7 accessories × 8 headwear × 3 cheeks × 37 colors =**
+**8 head shapes × 7 ears × 14 eyes × 11 mouths × 7 accessories × 8 headwear × 3 cheeks × 4 eyebrows × 6 moods × 4 palettes =**
 
-> **~7.5 million unique avatars**
+> **~34 million unique avatars**
 
-...and that's not even counting color combinations.
+...and that's not even counting color variations.
 
 ## Browser Support
 

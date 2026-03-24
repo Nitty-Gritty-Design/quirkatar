@@ -1,3 +1,6 @@
+// Quirkatar - The quirkiest avatar generator
+// https://github.com/Nitty-Gritty-Design/quirkatar
+
 // Simple PRNG
 function xmur3(str) {
   let h = 1779033703 ^ str.length;
@@ -21,32 +24,127 @@ function mulberry32(a) {
   };
 }
 
-const COLORS = [
-  '#FFAD08', '#EDD75A', '#73B06F', '#0C8F8F', '#405059',
-  '#FF9F1C', '#FFBF69', '#CBF3F0', '#2EC4B6',
-  '#264653', '#2A9D8F', '#E9C46A', '#F4A261', '#E76F51',
-  '#FFCDB2', '#FFB4A2', '#E5989B', '#B5838D', '#6D6875',
-  '#8ECAE6', '#219EBC', '#023047', '#FFB703', '#FB8500',
-  '#CDB4DB', '#FFC8DD', '#FFAFCC', '#BDE0FE', '#A2D2FF',
-  '#F94144', '#F3722C', '#F8961E', '#F9C74F', '#90BE6D', '#43AA8B', '#577590'
-];
+// Color palettes
+const PALETTES = {
+  default: [
+    '#FFAD08', '#EDD75A', '#73B06F', '#0C8F8F', '#405059',
+    '#FF9F1C', '#FFBF69', '#CBF3F0', '#2EC4B6', '#264653',
+    '#2A9D8F', '#E9C46A', '#F4A261', '#E76F51', '#FFCDB2',
+    '#FFB4A2', '#E5989B', '#B5838D', '#6D6875', '#8ECAE6',
+    '#219EBC', '#023047', '#FFB703', '#FB8500', '#CDB4DB',
+    '#FFC8DD', '#FFAFCC', '#BDE0FE', '#A2D2FF', '#F94144',
+    '#F3722C', '#F8961E', '#F9C74F', '#90BE6D', '#43AA8B', '#577590'
+  ],
+  pastel: [
+    '#FFB5E8', '#FF9CEE', '#FFCCF9', '#FCC2FF', '#F6A6FF',
+    '#B28DFF', '#C5A3FF', '#D5AAFF', '#ECD4FF', '#AFCBFF',
+    '#AFF8DB', '#BFFCC6', '#E7FFAC', '#FFFFD1', '#FFC9DE',
+    '#FFABAB', '#FFDAC1', '#B5EAD7', '#C7CEEA', '#E2F0CB'
+  ],
+  neon: [
+    '#FF00FF', '#00FFFF', '#FF00AA', '#AAFF00', '#00FF00',
+    '#FF6600', '#0066FF', '#FFFF00', '#FF0066', '#6600FF',
+    '#00FF66', '#FF3300', '#0033FF', '#FF0099', '#99FF00'
+  ],
+  monochrome: [
+    '#1a1a1a', '#2d2d2d', '#404040', '#535353', '#666666',
+    '#7a7a7a', '#8d8d8d', '#a0a0a0', '#b3b3b3', '#c6c6c6',
+    '#d9d9d9', '#ececec', '#ffffff'
+  ]
+};
 
-function generateAvatarSvg(seed, size = 100, square = false, animated = true) {
+// Mood configurations
+const MOODS = {
+  happy: {
+    eyes: ['happy', 'normal', 'wink', 'star', 'heart'],
+    mouth: ['smile', 'openSmile', 'tongue', 'cat'],
+    eyebrows: 'raised'
+  },
+  sad: {
+    eyes: ['sleepy', 'normal', 'wink'],
+    mouth: ['frown', 'o', 'zigzag'],
+    eyebrows: 'droopy'
+  },
+  angry: {
+    eyes: ['normal', 'cyclops', 'wink'],
+    mouth: ['frown', 'teeth', 'zigzag'],
+    eyebrows: 'angry'
+  },
+  surprised: {
+    eyes: ['normal', 'cyclops', 'three', 'star'],
+    mouth: ['o', 'openSmile'],
+    eyebrows: 'raised'
+  },
+  chill: {
+    eyes: ['sleepy', 'normal', 'wink', 'glasses'],
+    mouth: ['smile', 'cat', 'o'],
+    eyebrows: 'neutral'
+  },
+  random: null
+};
+
+/**
+ * Generate a quirky avatar SVG
+ * @param {string} seed - The seed string for deterministic generation
+ * @param {Object|number} options - Options object or size (legacy)
+ * @param {number} options.size - Avatar size in pixels (default: 100)
+ * @param {boolean} options.square - Square avatar instead of circle (default: false)
+ * @param {boolean} options.animated - Enable animations (default: true)
+ * @param {string} options.mood - 'random'|'happy'|'sad'|'angry'|'surprised'|'chill' (default: 'random')
+ * @param {string} options.palette - 'default'|'pastel'|'neon'|'monochrome' (default: 'default')
+ * @param {boolean} options.eyebrows - Show eyebrows (default: true)
+ * @returns {string} SVG string
+ */
+function generateAvatarSvg(seed, options = {}) {
+  // Legacy support: generateAvatarSvg(seed, size, square, animated)
+  if (typeof options === 'number' || typeof options === 'boolean') {
+    options = {
+      size: typeof options === 'number' ? options : 100,
+      square: typeof options === 'boolean' ? options : false,
+      animated: arguments[3] !== undefined ? arguments[3] : true
+    };
+  }
+
+  const {
+    size = 100,
+    square = false,
+    animated = true,
+    mood = 'random',
+    palette = 'default',
+    eyebrows: showEyebrows = true
+  } = options;
+
   const seedNum = xmur3(seed)();
   const rand = mulberry32(seedNum);
 
   const pick = (arr) => arr[Math.floor(rand() * arr.length)];
 
+  // Get colors from palette
+  const COLORS = PALETTES[palette] || PALETTES.default;
   const bgColor = pick(COLORS);
   let headColor = pick(COLORS);
   while (headColor === bgColor) headColor = pick(COLORS);
   let detailColor = pick(COLORS);
   while (detailColor === bgColor || detailColor === headColor) detailColor = pick(COLORS);
 
+  // Get mood config
+  const moodConfig = MOODS[mood] || MOODS.random;
+
+  // Select features based on mood
   const headShape = pick(['circle', 'squircle', 'blob', 'triangle', 'hexagon', 'diamond', 'star', 'cloud']);
   const ears = pick(['none', 'cat', 'bear', 'bunny', 'alien', 'elf', 'robot']);
-  const eyes = pick(['normal', 'happy', 'sleepy', 'cyclops', 'glasses', 'three', 'wink', 'star', 'heart']);
-  const mouth = pick(['smile', 'openSmile', 'frown', 'cat', 'vampire', 'o', 'zigzag', 'tongue', 'teeth']);
+  
+  // Eyes based on mood
+  const allEyes = ['normal', 'happy', 'sleepy', 'cyclops', 'glasses', 'three', 'wink', 'star', 'heart'];
+  const eyes = moodConfig ? pick(moodConfig.eyes) : pick(allEyes);
+  
+  // Mouth based on mood
+  const allMouths = ['smile', 'openSmile', 'frown', 'cat', 'vampire', 'o', 'zigzag', 'tongue', 'teeth'];
+  const mouth = moodConfig ? pick(moodConfig.mouth) : pick(allMouths);
+  
+  // Eyebrows based on mood
+  const eyebrowType = moodConfig ? moodConfig.eyebrows : pick(['neutral', 'raised', 'droopy', 'angry']);
+  
   const accessory = pick(['none', 'none', 'none', 'freckles', 'blush', 'mustache', 'beard']);
   const headwear = pick(['none', 'none', 'none', 'hat', 'crown', 'horns', 'headphones', 'bow']);
   const cheeks = pick(['none', 'rosy', 'dimples']);
@@ -143,96 +241,115 @@ function generateAvatarSvg(seed, size = 100, square = false, animated = true) {
     svg += `<path d="M 25 60 C 10 60 10 45 25 45 C 25 30 45 25 55 35 C 65 20 90 30 85 50 C 95 55 90 70 75 70 L 25 70 C 15 70 15 60 25 60 Z" fill="${headColor}" />`;
   }
 
+  // Eyebrows (above eyes)
+  if (showEyebrows) {
+    svg += `<g fill="none" stroke="#111" stroke-width="3" stroke-linecap="round">`;
+    if (eyebrowType === 'raised') {
+      svg += `<path d="M 25 35 Q 35 30 45 35" />
+              <path d="M 55 35 Q 65 30 75 35" />`;
+    } else if (eyebrowType === 'droopy') {
+      svg += `<path d="M 25 35 Q 35 40 45 35" />
+              <path d="M 55 35 Q 65 40 75 35" />`;
+    } else if (eyebrowType === 'angry') {
+      svg += `<path d="M 25 40 L 45 35" />
+              <path d="M 55 35 L 75 40" />`;
+    } else {
+      svg += `<path d="M 25 35 L 45 35" />
+              <path d="M 55 35 L 75 35" />`;
+    }
+    svg += `</g>`;
+  }
+
   // Eyes
   svg += `<g class="quirks-blink">`;
   if (eyes === 'normal') {
-    svg += `<circle cx="35" cy="45" r="6" fill="#111" />
-            <circle cx="65" cy="45" r="6" fill="#111" />`;
+    svg += `<circle cx="35" cy="48" r="6" fill="#111" />
+            <circle cx="65" cy="48" r="6" fill="#111" />`;
   } else if (eyes === 'happy') {
-    svg += `<path d="M 25 45 Q 35 35 45 45" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
-            <path d="M 55 45 Q 65 35 75 45" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />`;
+    svg += `<path d="M 25 48 Q 35 38 45 48" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M 55 48 Q 65 38 75 48" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />`;
   } else if (eyes === 'sleepy') {
-    svg += `<path d="M 25 45 Q 35 55 45 45" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
-            <path d="M 55 45 Q 65 55 75 45" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />`;
+    svg += `<path d="M 25 48 Q 35 58 45 48" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M 55 48 Q 65 58 75 48" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />`;
   } else if (eyes === 'cyclops') {
-    svg += `<circle cx="50" cy="40" r="14" fill="#fff" />
-            <circle cx="50" cy="40" r="6" fill="#111" />`;
+    svg += `<circle cx="50" cy="45" r="14" fill="#fff" />
+            <circle cx="50" cy="45" r="6" fill="#111" />`;
   } else if (eyes === 'glasses') {
-    svg += `<rect x="20" y="35" width="26" height="18" rx="4" fill="none" stroke="#111" stroke-width="4" />
-            <rect x="54" y="35" width="26" height="18" rx="4" fill="none" stroke="#111" stroke-width="4" />
-            <line x1="46" y1="44" x2="54" y2="44" stroke="#111" stroke-width="4" />
-            <circle cx="33" cy="44" r="4" fill="#111" />
-            <circle cx="67" cy="44" r="4" fill="#111" />`;
+    svg += `<rect x="20" y="38" width="26" height="18" rx="4" fill="none" stroke="#111" stroke-width="4" />
+            <rect x="54" y="38" width="26" height="18" rx="4" fill="none" stroke="#111" stroke-width="4" />
+            <line x1="46" y1="47" x2="54" y2="47" stroke="#111" stroke-width="4" />
+            <circle cx="33" cy="47" r="4" fill="#111" />
+            <circle cx="67" cy="47" r="4" fill="#111" />`;
   } else if (eyes === 'three') {
-    svg += `<circle cx="50" cy="35" r="5" fill="#111" />
-            <circle cx="30" cy="50" r="5" fill="#111" />
-            <circle cx="70" cy="50" r="5" fill="#111" />`;
+    svg += `<circle cx="50" cy="38" r="5" fill="#111" />
+            <circle cx="30" cy="53" r="5" fill="#111" />
+            <circle cx="70" cy="53" r="5" fill="#111" />`;
   } else if (eyes === 'wink') {
-    svg += `<circle cx="35" cy="45" r="6" fill="#111" />
-            <path d="M 55 45 Q 65 35 75 45" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />`;
+    svg += `<circle cx="35" cy="48" r="6" fill="#111" />
+            <path d="M 55 48 Q 65 38 75 48" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />`;
   } else if (eyes === 'star') {
-    svg += `<polygon points="35,39 37,43 41,43 38,46 39,50 35,48 31,50 32,46 29,43 33,43" fill="#111" />
-            <polygon points="65,39 67,43 71,43 68,46 69,50 65,48 61,50 62,46 59,43 63,43" fill="#111" />`;
+    svg += `<polygon points="35,42 37,46 41,46 38,49 39,53 35,51 31,53 32,49 29,46 33,46" fill="#111" />
+            <polygon points="65,42 67,46 71,46 68,49 69,53 65,51 61,53 62,49 59,46 63,46" fill="#111" />`;
   } else if (eyes === 'heart') {
-    svg += `<path d="M 35 48 C 35 44 30 44 30 48 C 30 52 35 55 35 55 C 35 55 40 52 40 48 C 40 44 35 44 35 48 Z" fill="#e91e63" />
-            <path d="M 65 48 C 65 44 60 44 60 48 C 60 52 65 55 65 55 C 65 55 70 52 70 48 C 70 44 65 44 65 48 Z" fill="#e91e63" />`;
+    svg += `<path d="M 35 51 C 35 47 30 47 30 51 C 30 55 35 58 35 58 C 35 58 40 55 40 51 C 40 47 35 47 35 51 Z" fill="#e91e63" />
+            <path d="M 65 51 C 65 47 60 47 60 51 C 60 55 65 58 65 58 C 65 58 70 55 70 51 C 70 47 65 47 65 51 Z" fill="#e91e63" />`;
   }
   svg += `</g>`;
 
   // Mouth
   if (mouth === 'smile') {
-    svg += `<g class="quirks-smile"><path d="M 35 65 Q 50 80 65 65" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" /></g>`;
+    svg += `<g class="quirks-smile"><path d="M 35 68 Q 50 83 65 68" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" /></g>`;
   } else if (mouth === 'openSmile') {
-    svg += `<g class="quirks-talk"><path d="M 30 60 Q 50 85 70 60 Z" fill="#111" />
-            <path d="M 40 70 Q 50 75 60 70 Q 50 65 40 70" fill="#ff6b6b" /></g>`;
+    svg += `<g class="quirks-talk"><path d="M 30 63 Q 50 88 70 63 Z" fill="#111" />
+            <path d="M 40 73 Q 50 78 60 73 Q 50 68 40 73" fill="#ff6b6b" /></g>`;
   } else if (mouth === 'frown') {
-    svg += `<g class="quirks-frown"><path d="M 35 75 Q 50 60 65 75" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" /></g>`;
+    svg += `<g class="quirks-frown"><path d="M 35 78 Q 50 63 65 78" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" /></g>`;
   } else if (mouth === 'cat') {
-    svg += `<g class="quirks-twitch"><path d="M 35 65 Q 42.5 75 50 65 Q 57.5 75 65 65" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" /></g>`;
+    svg += `<g class="quirks-twitch"><path d="M 35 68 Q 42.5 78 50 68 Q 57.5 78 65 68" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" /></g>`;
   } else if (mouth === 'vampire') {
-    svg += `<g class="quirks-smile"><path d="M 35 65 Q 50 80 65 65" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
-            <polygon points="40,68 45,69 42.5,75" fill="#fff" />
-            <polygon points="60,68 55,69 57.5,75" fill="#fff" /></g>`;
+    svg += `<g class="quirks-smile"><path d="M 35 68 Q 50 83 65 68" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
+            <polygon points="40,71 45,72 42.5,78" fill="#fff" />
+            <polygon points="60,71 55,72 57.5,78" fill="#fff" /></g>`;
   } else if (mouth === 'o') {
-    svg += `<g class="quirks-talk"><circle cx="50" cy="70" r="8" fill="#111" /></g>`;
+    svg += `<g class="quirks-talk"><circle cx="50" cy="73" r="8" fill="#111" /></g>`;
   } else if (mouth === 'zigzag') {
-    svg += `<g class="quirks-frown"><polyline points="35,65 42.5,70 50,65 57.5,70 65,65" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" /></g>`;
+    svg += `<g class="quirks-frown"><polyline points="35,68 42.5,73 50,68 57.5,73 65,68" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" /></g>`;
   } else if (mouth === 'tongue') {
-    svg += `<g class="quirks-smile"><path d="M 35 65 Q 50 80 65 65" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
-            <ellipse cx="50" cy="75" rx="8" ry="10" fill="#e91e63" /></g>`;
+    svg += `<g class="quirks-smile"><path d="M 35 68 Q 50 83 65 68" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
+            <ellipse cx="50" cy="78" rx="8" ry="10" fill="#e91e63" /></g>`;
   } else if (mouth === 'teeth') {
-    svg += `<g class="quirks-talk"><rect x="32" y="62" width="36" height="18" rx="4" fill="#111" />
-            <rect x="35" y="62" width="30" height="8" fill="#fff" />
-            <line x1="40" y1="62" x2="40" y2="70" stroke="#111" stroke-width="1" />
-            <line x1="50" y1="62" x2="50" y2="70" stroke="#111" stroke-width="1" />
-            <line x1="60" y1="62" x2="60" y2="70" stroke="#111" stroke-width="1" /></g>`;
+    svg += `<g class="quirks-talk"><rect x="32" y="65" width="36" height="18" rx="4" fill="#111" />
+            <rect x="35" y="65" width="30" height="8" fill="#fff" />
+            <line x1="40" y1="65" x2="40" y2="73" stroke="#111" stroke-width="1" />
+            <line x1="50" y1="65" x2="50" y2="73" stroke="#111" stroke-width="1" />
+            <line x1="60" y1="65" x2="60" y2="73" stroke="#111" stroke-width="1" /></g>`;
   }
 
   // Accessory (face details)
   if (accessory === 'freckles') {
-    svg += `<circle cx="25" cy="55" r="2" fill="#111" opacity="0.3" />
-            <circle cx="30" cy="58" r="2" fill="#111" opacity="0.3" />
-            <circle cx="20" cy="58" r="2" fill="#111" opacity="0.3" />
-            <circle cx="75" cy="55" r="2" fill="#111" opacity="0.3" />
-            <circle cx="70" cy="58" r="2" fill="#111" opacity="0.3" />
-            <circle cx="80" cy="58" r="2" fill="#111" opacity="0.3" />`;
+    svg += `<circle cx="25" cy="58" r="2" fill="#111" opacity="0.3" />
+            <circle cx="30" cy="61" r="2" fill="#111" opacity="0.3" />
+            <circle cx="20" cy="61" r="2" fill="#111" opacity="0.3" />
+            <circle cx="75" cy="58" r="2" fill="#111" opacity="0.3" />
+            <circle cx="70" cy="61" r="2" fill="#111" opacity="0.3" />
+            <circle cx="80" cy="61" r="2" fill="#111" opacity="0.3" />`;
   } else if (accessory === 'blush') {
-    svg += `<ellipse cx="25" cy="55" rx="8" ry="5" fill="#ff6b6b" opacity="0.5" />
-            <ellipse cx="75" cy="55" rx="8" ry="5" fill="#ff6b6b" opacity="0.5" />`;
+    svg += `<ellipse cx="25" cy="58" rx="8" ry="5" fill="#ff6b6b" opacity="0.5" />
+            <ellipse cx="75" cy="58" rx="8" ry="5" fill="#ff6b6b" opacity="0.5" />`;
   } else if (accessory === 'mustache') {
-    svg += `<path d="M 30 60 Q 50 50 70 60 Q 60 65 50 62 Q 40 65 30 60 Z" fill="#111" />`;
+    svg += `<path d="M 30 63 Q 50 53 70 63 Q 60 68 50 65 Q 40 68 30 63 Z" fill="#111" />`;
   } else if (accessory === 'beard') {
-    svg += `<path d="M 30 65 Q 35 85 50 88 Q 65 85 70 65 Q 60 70 50 72 Q 40 70 30 65 Z" fill="${headColor}" opacity="0.8" />
-            <path d="M 35 68 Q 40 78 50 80 Q 60 78 65 68" stroke="#111" stroke-width="2" fill="none" opacity="0.3" />`;
+    svg += `<path d="M 30 68 Q 35 88 50 91 Q 65 88 70 68 Q 60 73 50 75 Q 40 73 30 68 Z" fill="${headColor}" opacity="0.8" />
+            <path d="M 35 71 Q 40 81 50 83 Q 60 81 65 71" stroke="#111" stroke-width="2" fill="none" opacity="0.3" />`;
   }
   
   // Cheeks
   if (cheeks === 'rosy') {
-    svg += `<circle cx="25" cy="58" r="6" fill="#ffb6c1" opacity="0.4" />
-            <circle cx="75" cy="58" r="6" fill="#ffb6c1" opacity="0.4" />`;
+    svg += `<circle cx="25" cy="61" r="6" fill="#ffb6c1" opacity="0.4" />
+            <circle cx="75" cy="61" r="6" fill="#ffb6c1" opacity="0.4" />`;
   } else if (cheeks === 'dimples') {
-    svg += `<path d="M 22 58 Q 25 62 28 58" stroke="#111" stroke-width="2" fill="none" opacity="0.3" />
-            <path d="M 72 58 Q 75 62 78 58" stroke="#111" stroke-width="2" fill="none" opacity="0.3" />`;
+    svg += `<path d="M 22 61 Q 25 65 28 61" stroke="#111" stroke-width="2" fill="none" opacity="0.3" />
+            <path d="M 72 61 Q 75 65 78 61" stroke="#111" stroke-width="2" fill="none" opacity="0.3" />`;
   }
   
   svg += `</g>`;
@@ -267,7 +384,9 @@ function generateAvatarSvg(seed, size = 100, square = false, animated = true) {
 
 // Export for both ES modules and CommonJS
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { generateAvatarSvg };
+  module.exports = { generateAvatarSvg, PALETTES, MOODS };
 } else if (typeof window !== 'undefined') {
   window.generateAvatarSvg = generateAvatarSvg;
+  window.PALETTES = PALETTES;
+  window.MOODS = MOODS;
 }

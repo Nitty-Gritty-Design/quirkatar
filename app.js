@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let currentSeed = randomString();
+    let currentMood = 'random';
+    let currentPalette = 'default';
+    
     const mainAvatarEl = document.getElementById('main-avatar');
     const footerLogoEl = document.getElementById('footer-logo');
     const seedInput = document.getElementById('seed-input');
@@ -12,19 +15,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-btn');
     const downloadBtn = document.getElementById('download-btn');
     const regenGridBtn = document.getElementById('regenerate-grid-btn');
+    const moodSelect = document.getElementById('mood-select');
+    const paletteSelect = document.getElementById('palette-select');
 
     const copyIcon = document.getElementById('copy-icon');
     const checkIcon = document.getElementById('check-icon');
     const copyText = document.getElementById('copy-text');
 
+    function getAvatarOptions(size, animated = true) {
+        return {
+            size,
+            square: false,
+            animated,
+            mood: currentMood,
+            palette: currentPalette
+        };
+    }
+
     function renderMainAvatar() {
         mainAvatarEl.classList.add('morphing');
 
         setTimeout(() => {
-            mainAvatarEl.innerHTML = generateAvatarSvg(currentSeed, 180);
+            mainAvatarEl.innerHTML = generateAvatarSvg(currentSeed, getAvatarOptions(180));
             seedInput.value = currentSeed;
             mainAvatarEl.classList.remove('morphing');
-        }, 300); // Wait for fade out
+        }, 300);
     }
 
     function setSeed(seed) {
@@ -34,14 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Auto-change every 3 seconds
     setInterval(() => {
-        // Only auto-change if the input isn't actively being focused
         if (document.activeElement !== seedInput) {
             setSeed(randomString());
         }
     }, 3000);
 
     function handleCopy() {
-        const svgCode = generateAvatarSvg(currentSeed, 120, false, false);
+        const svgCode = generateAvatarSvg(currentSeed, getAvatarOptions(120, false));
         navigator.clipboard.writeText(svgCode).then(() => {
             copyIcon.style.display = 'none';
             checkIcon.style.display = 'inline-block';
@@ -73,7 +87,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleDownload() {
-        const svgCode = generateAvatarSvg(currentSeed, 512, false, false);
+        const svgCode = generateAvatarSvg(currentSeed, {
+            size: 512,
+            square: false,
+            animated: false,
+            mood: currentMood,
+            palette: currentPalette
+        });
         const canvas = document.createElement('canvas');
         canvas.width = 512;
         canvas.height = 512;
@@ -106,7 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const svgContainer = document.createElement('div');
             svgContainer.className = 'grid-item-avatar';
-            svgContainer.innerHTML = generateAvatarSvg(seed, 80, false, false); // Turn off animations for the grid items to save CPU
+            svgContainer.innerHTML = generateAvatarSvg(seed, {
+                size: 80,
+                square: false,
+                animated: false,
+                mood: currentMood,
+                palette: currentPalette
+            });
 
             const seedText = document.createElement('span');
             seedText.className = 'grid-item-seed';
@@ -138,11 +164,23 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadBtn.addEventListener('click', handleDownload);
     regenGridBtn.addEventListener('click', generateGrid);
 
+    moodSelect.addEventListener('change', (e) => {
+        currentMood = e.target.value;
+        renderMainAvatar();
+        generateGrid();
+    });
+
+    paletteSelect.addEventListener('change', (e) => {
+        currentPalette = e.target.value;
+        renderMainAvatar();
+        generateGrid();
+    });
+
     // Initialize
     seedInput.value = currentSeed;
     renderMainAvatar();
     generateGrid();
 
     // Footer Logo
-    footerLogoEl.innerHTML = generateAvatarSvg('footer-logo', 48);
+    footerLogoEl.innerHTML = generateAvatarSvg('footer-logo', { size: 48, animated: false });
 });
