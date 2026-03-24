@@ -43,11 +43,13 @@ function generateAvatarSvg(seed, size = 100, square = false, animated = true) {
   let detailColor = pick(COLORS);
   while (detailColor === bgColor || detailColor === headColor) detailColor = pick(COLORS);
 
-  const headShape = pick(['circle', 'squircle', 'blob', 'triangle', 'hexagon']);
-  const ears = pick(['none', 'cat', 'bear', 'bunny', 'alien']);
-  const eyes = pick(['normal', 'happy', 'sleepy', 'cyclops', 'glasses', 'three']);
-  const mouth = pick(['smile', 'openSmile', 'frown', 'cat', 'vampire', 'o', 'zigzag']);
-  const accessory = pick(['none', 'none', 'freckles', 'blush', 'mustache']);
+  const headShape = pick(['circle', 'squircle', 'blob', 'triangle', 'hexagon', 'diamond', 'star', 'cloud']);
+  const ears = pick(['none', 'cat', 'bear', 'bunny', 'alien', 'elf', 'robot']);
+  const eyes = pick(['normal', 'happy', 'sleepy', 'cyclops', 'glasses', 'three', 'wink', 'star', 'heart']);
+  const mouth = pick(['smile', 'openSmile', 'frown', 'cat', 'vampire', 'o', 'zigzag', 'tongue', 'teeth']);
+  const accessory = pick(['none', 'none', 'none', 'freckles', 'blush', 'mustache', 'beard']);
+  const headwear = pick(['none', 'none', 'none', 'hat', 'crown', 'horns', 'headphones', 'bow']);
+  const cheeks = pick(['none', 'rosy', 'dimples']);
 
   let svg = `<svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">`;
 
@@ -108,6 +110,16 @@ function generateAvatarSvg(seed, size = 100, square = false, animated = true) {
             <circle cx="15" cy="10" r="6" fill="${detailColor}" />
             <line x1="70" y1="30" x2="85" y2="10" stroke="${headColor}" stroke-width="4" stroke-linecap="round" />
             <circle cx="85" cy="10" r="6" fill="${detailColor}" />`;
+  } else if (ears === 'elf') {
+    svg += `<polygon points="15,50 5,15 35,35" fill="${headColor}" />
+            <polygon points="85,50 95,15 65,35" fill="${headColor}" />`;
+  } else if (ears === 'robot') {
+    svg += `<rect x="10" y="35" width="10" height="25" rx="2" fill="${detailColor}" />
+            <rect x="80" y="35" width="10" height="25" rx="2" fill="${detailColor}" />
+            <circle cx="15" cy="40" r="2" fill="${headColor}" />
+            <circle cx="85" cy="40" r="2" fill="${headColor}" />
+            <circle cx="15" cy="50" r="2" fill="${headColor}" />
+            <circle cx="85" cy="50" r="2" fill="${headColor}" />`;
   }
   svg += `</g>`;
 
@@ -123,6 +135,12 @@ function generateAvatarSvg(seed, size = 100, square = false, animated = true) {
     svg += `<polygon points="50,20 85,80 15,80" fill="${headColor}" />`;
   } else if (headShape === 'hexagon') {
     svg += `<polygon points="50,15 80,32 80,68 50,85 20,68 20,32" fill="${headColor}" />`;
+  } else if (headShape === 'diamond') {
+    svg += `<polygon points="50,10 85,50 50,90 15,50" fill="${headColor}" />`;
+  } else if (headShape === 'star') {
+    svg += `<polygon points="50,10 58,35 85,35 63,52 72,80 50,62 28,80 37,52 15,35 42,35" fill="${headColor}" />`;
+  } else if (headShape === 'cloud') {
+    svg += `<path d="M 25 60 C 10 60 10 45 25 45 C 25 30 45 25 55 35 C 65 20 90 30 85 50 C 95 55 90 70 75 70 L 25 70 C 15 70 15 60 25 60 Z" fill="${headColor}" />`;
   }
 
   // Eyes
@@ -149,6 +167,15 @@ function generateAvatarSvg(seed, size = 100, square = false, animated = true) {
     svg += `<circle cx="50" cy="35" r="5" fill="#111" />
             <circle cx="30" cy="50" r="5" fill="#111" />
             <circle cx="70" cy="50" r="5" fill="#111" />`;
+  } else if (eyes === 'wink') {
+    svg += `<circle cx="35" cy="45" r="6" fill="#111" />
+            <path d="M 55 45 Q 65 35 75 45" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />`;
+  } else if (eyes === 'star') {
+    svg += `<polygon points="35,39 37,43 41,43 38,46 39,50 35,48 31,50 32,46 29,43 33,43" fill="#111" />
+            <polygon points="65,39 67,43 71,43 68,46 69,50 65,48 61,50 62,46 59,43 63,43" fill="#111" />`;
+  } else if (eyes === 'heart') {
+    svg += `<path d="M 35 48 C 35 44 30 44 30 48 C 30 52 35 55 35 55 C 35 55 40 52 40 48 C 40 44 35 44 35 48 Z" fill="#e91e63" />
+            <path d="M 65 48 C 65 44 60 44 60 48 C 60 52 65 55 65 55 C 65 55 70 52 70 48 C 70 44 65 44 65 48 Z" fill="#e91e63" />`;
   }
   svg += `</g>`;
 
@@ -170,9 +197,18 @@ function generateAvatarSvg(seed, size = 100, square = false, animated = true) {
     svg += `<g class="quirks-talk"><circle cx="50" cy="70" r="8" fill="#111" /></g>`;
   } else if (mouth === 'zigzag') {
     svg += `<g class="quirks-frown"><polyline points="35,65 42.5,70 50,65 57.5,70 65,65" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" /></g>`;
+  } else if (mouth === 'tongue') {
+    svg += `<g class="quirks-smile"><path d="M 35 65 Q 50 80 65 65" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
+            <ellipse cx="50" cy="75" rx="8" ry="10" fill="#e91e63" /></g>`;
+  } else if (mouth === 'teeth') {
+    svg += `<g class="quirks-talk"><rect x="32" y="62" width="36" height="18" rx="4" fill="#111" />
+            <rect x="35" y="62" width="30" height="8" fill="#fff" />
+            <line x1="40" y1="62" x2="40" y2="70" stroke="#111" stroke-width="1" />
+            <line x1="50" y1="62" x2="50" y2="70" stroke="#111" stroke-width="1" />
+            <line x1="60" y1="62" x2="60" y2="70" stroke="#111" stroke-width="1" /></g>`;
   }
 
-  // Accessory
+  // Accessory (face details)
   if (accessory === 'freckles') {
     svg += `<circle cx="25" cy="55" r="2" fill="#111" opacity="0.3" />
             <circle cx="30" cy="58" r="2" fill="#111" opacity="0.3" />
@@ -185,9 +221,53 @@ function generateAvatarSvg(seed, size = 100, square = false, animated = true) {
             <ellipse cx="75" cy="55" rx="8" ry="5" fill="#ff6b6b" opacity="0.5" />`;
   } else if (accessory === 'mustache') {
     svg += `<path d="M 30 60 Q 50 50 70 60 Q 60 65 50 62 Q 40 65 30 60 Z" fill="#111" />`;
+  } else if (accessory === 'beard') {
+    svg += `<path d="M 30 65 Q 35 85 50 88 Q 65 85 70 65 Q 60 70 50 72 Q 40 70 30 65 Z" fill="${headColor}" opacity="0.8" />
+            <path d="M 35 68 Q 40 78 50 80 Q 60 78 65 68" stroke="#111" stroke-width="2" fill="none" opacity="0.3" />`;
+  }
+  
+  // Cheeks
+  if (cheeks === 'rosy') {
+    svg += `<circle cx="25" cy="58" r="6" fill="#ffb6c1" opacity="0.4" />
+            <circle cx="75" cy="58" r="6" fill="#ffb6c1" opacity="0.4" />`;
+  } else if (cheeks === 'dimples') {
+    svg += `<path d="M 22 58 Q 25 62 28 58" stroke="#111" stroke-width="2" fill="none" opacity="0.3" />
+            <path d="M 72 58 Q 75 62 78 58" stroke="#111" stroke-width="2" fill="none" opacity="0.3" />`;
+  }
+  
+  svg += `</g>`;
+  
+  // Headwear (on top of everything)
+  svg += `<g>`;
+  if (headwear === 'hat') {
+    svg += `<rect x="25" y="5" width="50" height="15" rx="3" fill="${detailColor}" />
+            <rect x="20" y="18" width="60" height="6" rx="2" fill="${detailColor}" />`;
+  } else if (headwear === 'crown') {
+    svg += `<polygon points="25,22 30,5 40,15 50,2 60,15 70,5 75,22" fill="#ffd700" />
+            <circle cx="30" cy="18" r="3" fill="#e74c3c" />
+            <circle cx="50" cy="12" r="3" fill="#3498db" />
+            <circle cx="70" cy="18" r="3" fill="#2ecc71" />`;
+  } else if (headwear === 'horns') {
+    svg += `<path d="M 25 30 Q 15 15 20 5" stroke="${detailColor}" stroke-width="6" fill="none" stroke-linecap="round" />
+            <path d="M 75 30 Q 85 15 80 5" stroke="${detailColor}" stroke-width="6" fill="none" stroke-linecap="round" />`;
+  } else if (headwear === 'headphones') {
+    svg += `<path d="M 15 50 Q 15 20 50 15 Q 85 20 85 50" stroke="${detailColor}" stroke-width="6" fill="none" />
+            <rect x="8" y="45" width="12" height="20" rx="4" fill="${detailColor}" />
+            <rect x="80" y="45" width="12" height="20" rx="4" fill="${detailColor}" />`;
+  } else if (headwear === 'bow') {
+    svg += `<ellipse cx="35" cy="15" rx="12" ry="8" fill="${detailColor}" />
+            <ellipse cx="65" cy="15" rx="12" ry="8" fill="${detailColor}" />
+            <circle cx="50" cy="15" r="6" fill="${detailColor}" />`;
   }
   svg += `</g>`;
 
   svg += `</svg>`;
   return svg;
+}
+
+// Export for both ES modules and CommonJS
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { generateAvatarSvg };
+} else if (typeof window !== 'undefined') {
+  window.generateAvatarSvg = generateAvatarSvg;
 }

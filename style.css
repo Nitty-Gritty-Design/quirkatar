@@ -237,6 +237,25 @@ body {
   background: var(--stone-800);
 }
 
+.download-btn {
+  background: var(--indigo-600);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+}
+
+.download-btn:hover {
+  background: var(--indigo-500);
+}
+
 /* Sections */
 .seo-section {
   border-top: 1px solid var(--stone-200);

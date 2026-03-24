@@ -1,5 +1,8 @@
 {
-  "name": "Procedural Avatars",
-  "description": "A lightweight, zero-dependency procedural avatar generator.",
-  "requestFramePermissions": []
+  "name": "Quirkatar Avatar Generator",
+  "description": "A free, lightweight, zero-dependency procedural avatar generator for JavaScript",
+  "keywords": ["avatar", "generator", "svg", "procedural", "javascript"],
+  "author": "Nitty-Gritty-Design",
+  "license": "MIT",
+  "homepage": "https://nitty-gritty-design.github.io/quirkatar-avatar-generator/"
 }

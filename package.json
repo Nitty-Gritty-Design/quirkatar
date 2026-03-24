@@ -1,0 +1,47 @@
+{
+  "name": "quirkatar",
+  "version": "1.0.0",
+  "description": "A free, lightweight, zero-dependency procedural avatar generator. Create unique, quirky profile pictures from any seed string.",
+  "main": "avatar.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./avatar.js",
+      "require": "./avatar.cjs"
+    }
+  },
+  "files": [
+    "avatar.js",
+    "avatar.cjs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:cjs": "node -e \"const fs=require('fs'); const code=fs.readFileSync('avatar.js','utf8'); fs.writeFileSync('avatar.cjs', code.replace('export { generateAvatarSvg };', 'module.exports = { generateAvatarSvg };'))\""
+  },
+  "keywords": [
+    "avatar",
+    "generator",
+    "procedural",
+    "svg",
+    "random",
+    "profile",
+    "identicon",
+    "placeholder",
+    "react",
+    "vanilla-js",
+    "lightweight",
+    "zero-dependency"
+  ],
+  "author": "Nitty-Gritty-Design",
+  "license": "MIT",
+  "homepage": "https://nitty-gritty-design.github.io/quirkatar-avatar-generator/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nitty-Gritty-Design/quirkatar-avatar-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Nitty-Gritty-Design/quirkatar-avatar-generator/issues"
+  },
+  "sideEffects": false
+}

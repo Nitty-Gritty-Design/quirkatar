@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarGrid = document.getElementById('avatar-grid');
     const refreshMainBtn = document.getElementById('refresh-main-btn');
     const copyBtn = document.getElementById('copy-btn');
+    const downloadBtn = document.getElementById('download-btn');
     const regenGridBtn = document.getElementById('regenerate-grid-btn');
 
     const copyIcon = document.getElementById('copy-icon');
@@ -40,18 +41,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3000);
 
     function handleCopy() {
-        const code = `<svg ...>${generateAvatarSvg(currentSeed, 120)}</svg>`; // Not copying actual code since plain JS, just copying snippet like the original React app did. The original React app copied `<Avatar seed="${seed}" size={120} />`. We can just copy the seed, or the img tag? Let's just follow the original and copy the seed logic snippet, or just the seed. But wait! The user wanted pure HTML and JS. So maybe copy an `<img src="...">`? Actually, since it's client side JS, maybe just copying the seed or the SVG code is best. Let's just copy the raw SVG string.
-        navigator.clipboard.writeText(generateAvatarSvg(currentSeed, 120)).then(() => {
+        const svgCode = generateAvatarSvg(currentSeed, 120, false, false);
+        navigator.clipboard.writeText(svgCode).then(() => {
             copyIcon.style.display = 'none';
             checkIcon.style.display = 'inline-block';
-            copyText.textContent = 'Copied';
+            copyText.textContent = 'Copied!';
 
             setTimeout(() => {
                 copyIcon.style.display = 'inline-block';
                 checkIcon.style.display = 'none';
                 copyText.textContent = 'Copy';
             }, 2000);
+        }).catch(err => {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = svgCode;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            copyIcon.style.display = 'none';
+            checkIcon.style.display = 'inline-block';
+            copyText.textContent = 'Copied!';
+            setTimeout(() => {
+                copyIcon.style.display = 'inline-block';
+                checkIcon.style.display = 'none';
+                copyText.textContent = 'Copy';
+            }, 2000);
         });
+    }
+
+    function handleDownload() {
+        const svgCode = generateAvatarSvg(currentSeed, 512, false, false);
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        
+        const img = new Image();
+        const svgBlob = new Blob([svgCode], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0, 512, 512);
+            URL.revokeObjectURL(url);
+            
+            const pngUrl = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `quirkatar-${currentSeed}.png`;
+            link.href = pngUrl;
+            link.click();
+        };
+        
+        img.src = url;
     }
 
     function generateGrid() {
@@ -92,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     copyBtn.addEventListener('click', handleCopy);
-
+    downloadBtn.addEventListener('click', handleDownload);
     regenGridBtn.addEventListener('click', generateGrid);
 
     // Initialize
