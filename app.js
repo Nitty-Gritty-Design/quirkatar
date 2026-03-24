@@ -47,12 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMainAvatar();
     }
 
-    // Auto-change every 3 seconds
+    // Auto-change every 45 seconds
     setInterval(() => {
         if (document.activeElement !== seedInput) {
             setSeed(randomString());
         }
-    }, 3000);
+    }, 45000);
 
     function handleCopy() {
         const svgCode = generateAvatarSvg(currentSeed, getAvatarOptions(120, false));

@@ -149,7 +149,7 @@ function generateAvatarSvg(seed, options = {}) {
   const headwear = pick(['none', 'none', 'none', 'hat', 'crown', 'horns', 'headphones', 'bow']);
   const cheeks = pick(['none', 'rosy', 'dimples']);
 
-  let svg = `<svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">`;
+  let svg = `<svg width="${size}" height="${size}" viewBox="0 -10 100 110" xmlns="http://www.w3.org/2000/svg">`;
 
   if (animated) {
     svg += `
