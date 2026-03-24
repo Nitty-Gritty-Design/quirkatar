@@ -4,7 +4,7 @@
   <p><strong>The weirdest, quirkiest avatar generator on the internet.</strong></p>
   <p>Zero dependencies. Infinite chaos.</p>
   
-  <a href="https://nitty-gritty-design.github.io/quirkatar-avatar-generator/">
+  <a href="https://nitty-gritty-design.github.io/quirkatar/">
     <img src="https://img.shields.io/badge/LIVE_DEMO-Try_It_Now-brightgreen?style=for-the-badge&logo=google-chrome" />
   </a>
   <a href="https://www.npmjs.com/package/quirkatar">
