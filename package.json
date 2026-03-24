@@ -38,10 +38,10 @@
   "homepage": "https://nitty-gritty-design.github.io/quirkatar-avatar-generator/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Nitty-Gritty-Design/quirkatar-avatar-generator.git"
+    "url": "https://github.com/Nitty-Gritty-Design/quirkatar.git"
   },
   "bugs": {
-    "url": "https://github.com/Nitty-Gritty-Design/quirkatar-avatar-generator/issues"
+    "url": "https://github.com/Nitty-Gritty-Design/quirkatar/issues"
   },
   "sideEffects": false
 }
