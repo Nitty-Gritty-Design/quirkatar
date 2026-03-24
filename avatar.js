@@ -316,7 +316,7 @@ function generateAvatarSvg(seed, options = {}) {
     svg += `<g class="quirks-frown"><polyline points="35,68 42.5,73 50,68 57.5,73 65,68" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" /></g>`;
   } else if (mouth === 'tongue') {
     svg += `<g class="quirks-smile"><path d="M 35 68 Q 50 83 65 68" stroke="#111" stroke-width="4" stroke-linecap="round" fill="none" />
-            <ellipse cx="50" cy="78" rx="8" ry="10" fill="#e91e63" /></g>`;
+            <ellipse cx="50" cy="74" rx="6" ry="5" fill="#e91e63" /></g>`;
   } else if (mouth === 'teeth') {
     svg += `<g class="quirks-talk"><rect x="32" y="65" width="36" height="18" rx="4" fill="#111" />
             <rect x="35" y="65" width="30" height="8" fill="#fff" />
