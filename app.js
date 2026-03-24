@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSeed = randomString();
     let currentMood = 'random';
     let currentPalette = 'default';
+    let currentAnimated = true;
     
     const mainAvatarEl = document.getElementById('main-avatar');
     const footerLogoEl = document.getElementById('footer-logo');
@@ -17,16 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const regenGridBtn = document.getElementById('regenerate-grid-btn');
     const moodSelect = document.getElementById('mood-select');
     const paletteSelect = document.getElementById('palette-select');
+    const animationSelect = document.getElementById('animation-select');
 
     const copyIcon = document.getElementById('copy-icon');
     const checkIcon = document.getElementById('check-icon');
     const copyText = document.getElementById('copy-text');
 
-    function getAvatarOptions(size, animated = true) {
+    function getAvatarOptions(size, animatedOverride = null) {
         return {
             size,
             square: false,
-            animated,
+            animated: animatedOverride !== null ? animatedOverride : currentAnimated,
             mood: currentMood,
             palette: currentPalette
         };
@@ -174,6 +176,11 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPalette = e.target.value;
         renderMainAvatar();
         generateGrid();
+    });
+
+    animationSelect.addEventListener('change', (e) => {
+        currentAnimated = e.target.value === 'on';
+        renderMainAvatar();
     });
 
     // Initialize
